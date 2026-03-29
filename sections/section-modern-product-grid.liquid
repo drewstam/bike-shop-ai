@@ -1,0 +1,146 @@
+{{ 'section-modern-product-grid.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'modern-product-grid.js' | asset_url }}" defer="defer"></script>
+
+{%- style -%}
+  .modern-product-grid-{{ section.id }} {
+    --modern-grid-accent-color: {{ section.settings.accent_color }};
+  }
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+
+{%- assign collection = section.settings.collection -%}
+
+{% if collection != blank and collection.products.size > 0 %}
+  <div class="color-{{ section.settings.color_scheme }} isolate gradient">
+    <div class="page-width section-{{ section.id }}-padding">
+      {% paginate collection.products by 8 %}
+        <modern-product-grid
+          class="modern-product-grid modern-product-grid-{{ section.id }}"
+          data-section-id="{{ section.id }}"
+          {% if paginate.next %}data-next-url="{{ paginate.next.url }}"{% endif %}
+          data-current-page="{{ paginate.current_page }}"
+          data-total-pages="{{ paginate.pages }}"
+        >
+          <div class="modern-product-grid__grid">
+            {% for product in collection.products %}
+              <a
+                href="{{ product.url }}"
+                class="modern-product-grid__card"
+                {% if product.media.size > 1 %}data-has-reveal="true"{% endif %}
+                aria-label="{{ product.title | escape }}"
+              >
+                <div class="modern-product-grid__card-image">
+                  {% if product.featured_image %}
+                    {{
+                      product.featured_image
+                      | image_url: width: 600
+                      | image_tag:
+                        loading: 'lazy',
+                        class: 'modern-product-grid__image',
+                        widths: '300, 400, 500, 600',
+                        alt: product.featured_image.alt | default: product.title | escape
+                    }}
+                  {% endif %}
+                </div>
+
+                <div class="modern-product-grid__card-info">
+                  <span class="modern-product-grid__card-title">{{ product.title }}</span>
+                </div>
+
+                {% if product.media.size > 1 %}
+                  <div class="modern-product-grid__card-reveal" aria-hidden="true">
+                    {{
+                      product.media[1].preview_image
+                      | image_url: width: 800
+                      | image_tag:
+                        loading: 'lazy',
+                        class: 'modern-product-grid__reveal-image',
+                        alt: ''
+                    }}
+                  </div>
+                {% endif %}
+              </a>
+            {% endfor %}
+          </div>
+
+          {% if paginate.pages > 1 %}
+            <div class="modern-product-grid__load-more-wrapper">
+              <a
+                href="{{ paginate.next.url }}"
+                class="modern-product-grid__load-more-button"
+                aria-label="Load more products"
+              >
+                Load more
+              </a>
+            </div>
+          {% endif %}
+        </modern-product-grid>
+      {% endpaginate %}
+    </div>
+  </div>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Modern Product Grid",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent color",
+      "default": "#e3fc02"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.all.padding.section_padding_heading"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_top",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_bottom",
+      "default": 36
+    }
+  ],
+  "presets": [
+    {
+      "name": "Modern Product Grid"
+    }
+  ]
+}
+{% endschema %}

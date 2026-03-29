@@ -1,0 +1,210 @@
+/* ==========================================================================
+   Modern Product Grid
+   A staggered 4-column product grid with hover reveal effect.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Grid Layout
+   -------------------------------------------------------------------------- */
+
+.modern-product-grid__grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2rem;
+  padding-bottom: 6rem; /* Extra space to accommodate stagger offset */
+}
+
+/* Stagger pattern — every even card (2nd, 4th per row) shifts down */
+.modern-product-grid__card:nth-child(even) {
+  transform: translateY(6rem);
+}
+
+/* --------------------------------------------------------------------------
+   Card Base
+   -------------------------------------------------------------------------- */
+
+.modern-product-grid__card {
+  display: block;
+  position: relative;
+  border: 1px solid rgba(var(--color-foreground), 0.15);
+  text-decoration: none;
+  color: rgb(var(--color-foreground));
+  transition: border-color 0.3s ease;
+  overflow: visible;
+}
+
+.modern-product-grid__card:hover,
+.modern-product-grid__card:focus-visible {
+  border-color: var(--modern-grid-accent-color, #e3fc02);
+  outline: none;
+}
+
+.modern-product-grid__card:focus-visible {
+  box-shadow: 0 0 0 2px var(--modern-grid-accent-color, #e3fc02);
+}
+
+/* --------------------------------------------------------------------------
+   Card Image
+   -------------------------------------------------------------------------- */
+
+.modern-product-grid__card-image {
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  background-color: rgba(var(--color-foreground), 0.03);
+}
+
+.modern-product-grid__image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* --------------------------------------------------------------------------
+   Card Info
+   -------------------------------------------------------------------------- */
+
+.modern-product-grid__card-info {
+  padding: 1.2rem 1rem;
+}
+
+.modern-product-grid__card-title {
+  display: block;
+  font-size: 1.4rem;
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* --------------------------------------------------------------------------
+   Secondary Image Reveal
+   -------------------------------------------------------------------------- */
+
+.modern-product-grid__card-reveal {
+  position: absolute;
+  top: 0;
+  right: -60%;
+  width: 60%;
+  height: 100%;
+  overflow: hidden;
+  clip-path: ellipse(70% 50% at 65% 50%);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.4s ease, visibility 0.4s ease;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.modern-product-grid__reveal-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Show reveal on card hover (desktop only) */
+@media (hover: hover) {
+  .modern-product-grid__card:hover .modern-product-grid__card-reveal,
+  .modern-product-grid__card.is-revealing .modern-product-grid__card-reveal {
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Load More
+   -------------------------------------------------------------------------- */
+
+.modern-product-grid__load-more-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: 4rem;
+  padding-top: 6rem; /* Offset for stagger spacing */
+}
+
+.modern-product-grid__load-more-button {
+  display: inline-block;
+  padding: 1.2rem 3rem;
+  font-size: 1.4rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: rgb(var(--color-foreground));
+  border: 1px solid rgba(var(--color-foreground), 0.3);
+  background: transparent;
+  cursor: pointer;
+  transition: border-color 0.3s ease, color 0.3s ease;
+}
+
+.modern-product-grid__load-more-button:hover,
+.modern-product-grid__load-more-button:focus-visible {
+  border-color: var(--modern-grid-accent-color, #e3fc02);
+  color: var(--modern-grid-accent-color, #e3fc02);
+}
+
+.modern-product-grid__load-more-button:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--modern-grid-accent-color, #e3fc02);
+}
+
+.modern-product-grid__load-more-button[aria-busy='true'] {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* --------------------------------------------------------------------------
+   Responsive — Mobile (< 750px)
+   -------------------------------------------------------------------------- */
+
+@media screen and (max-width: 749px) {
+  .modern-product-grid__grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+    padding-bottom: 0;
+  }
+
+  /* Remove stagger on mobile */
+  .modern-product-grid__card:nth-child(even) {
+    transform: none;
+  }
+
+  /* Hide reveal on mobile */
+  .modern-product-grid__card-reveal {
+    display: none;
+  }
+
+  .modern-product-grid__load-more-wrapper {
+    padding-top: 0;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Reduced Motion
+   -------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .modern-product-grid__card {
+    transition: none;
+  }
+
+  .modern-product-grid__card:nth-child(even) {
+    transform: none;
+  }
+
+  .modern-product-grid__card-reveal {
+    transition: none;
+  }
+
+  .modern-product-grid__grid {
+    padding-bottom: 0;
+  }
+
+  .modern-product-grid__load-more-wrapper {
+    padding-top: 0;
+  }
+
+  .modern-product-grid__load-more-button {
+    transition: none;
+  }
+}
