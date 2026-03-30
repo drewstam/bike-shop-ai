@@ -6,6 +6,8 @@ A collection page section for showcasing full face helmets. The layout uses an o
 
 The user will provide a reference screenshot in the `reference/` folder.
 
+Now, if you take a close look at the screenshots, you can see that the outline for all of our grid elements is not a perfect rectangle. It's also not a perfect square because it has a small notch in the lower right corner and this is where the product title sits. Please make sure that the product title doesn't overlap the outline. There should be some space reserved for that.
+
 ---
 
 ## Scoping Questions
