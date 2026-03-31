@@ -32,43 +32,35 @@
   overflow: visible;
 }
 
-/* Notched border frame — drawn via pseudo-element with evenodd clip-path.
-   The shape is a rectangle with the bottom-right corner cut away (the "notch")
-   where the product title sits. The 1px border effect is created by clipping
-   a filled element with two nested polygons (outer + inner offset by 1px). */
-.modern-product-grid__card::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: rgba(var(--color-foreground), 0.15);
-  clip-path: polygon(evenodd,
-    /* Outer shape — clockwise */
-    0% 0%,
-    100% 0%,
-    100% calc(100% - 3.5rem),
-    55% calc(100% - 3.5rem),
-    55% 100%,
-    0% 100%,
-    /* Inner shape — counterclockwise (1px inset creates border) */
-    1px 1px,
-    1px calc(100% - 1px),
-    calc(55% - 1px) calc(100% - 1px),
-    calc(55% - 1px) calc(100% - 3.5rem + 1px),
-    calc(100% - 1px) calc(100% - 3.5rem + 1px),
-    calc(100% - 1px) 1px
-  );
-  z-index: 1;
-  pointer-events: none;
-  transition: background 0.3s ease;
-}
-
-.modern-product-grid__card:hover::before,
-.modern-product-grid__card:focus-visible::before {
-  background: var(--modern-grid-accent-color, #e3fc02);
-}
-
 .modern-product-grid__card:focus-visible {
   outline: none;
+}
+
+/* --------------------------------------------------------------------------
+   SVG Border Frame — notched rectangle with rounded corners.
+   Uses preserveAspectRatio="none" so the SVG stretches with the card.
+   vector-effect="non-scaling-stroke" keeps the stroke at 1px regardless
+   of the card dimensions.
+   -------------------------------------------------------------------------- */
+
+.modern-product-grid__card-border {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.modern-product-grid__card-border-path {
+  stroke: rgba(var(--color-foreground), 0.15);
+  stroke-width: 1;
+  transition: stroke 0.3s ease;
+}
+
+.modern-product-grid__card:hover .modern-product-grid__card-border-path,
+.modern-product-grid__card:focus-visible .modern-product-grid__card-border-path {
+  stroke: var(--modern-grid-accent-color, #e3fc02);
 }
 
 /* --------------------------------------------------------------------------
@@ -79,13 +71,17 @@
   aspect-ratio: 1 / 1;
   overflow: hidden;
   background-color: rgba(var(--color-foreground), 0.03);
+  padding: 8%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .modern-product-grid__image {
   display: block;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
 }
 
 /* --------------------------------------------------------------------------
@@ -119,17 +115,32 @@
    Secondary Image Reveal
    -------------------------------------------------------------------------- */
 
+/* The reveal fills the full card and is clipped to the same notched shape
+   as the SVG border — matching the diagonal step and rounded corners.
+   The elliptical entrance animation is layered on top via a wrapper. */
+
 .modern-product-grid__card-reveal {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
-  height: calc(100% - 3.5rem);
+  height: 100%;
   overflow: hidden;
-  clip-path: ellipse(0% 50% at 100% 50%);
+  /* Notched shape clip matching the SVG border path */
+  clip-path: polygon(
+    2% 0%,
+    98% 0%,
+    100% 2%,
+    100% 86%,
+    62% 88%,
+    50% 100%,
+    2% 100%,
+    0% 98%,
+    0% 2%
+  );
   opacity: 0;
   visibility: hidden;
-  transition: opacity 0.3s ease, clip-path 0.5s ease, visibility 0.3s ease;
+  transition: opacity 0.4s ease, visibility 0.4s ease;
   pointer-events: none;
   z-index: 2;
 }
@@ -141,13 +152,17 @@
   object-fit: cover;
 }
 
+/* Title must sit above the reveal image */
+.modern-product-grid__card-info {
+  z-index: 3;
+}
+
 /* Show reveal on card hover (desktop only) */
 @media (hover: hover) {
   .modern-product-grid__card:hover .modern-product-grid__card-reveal,
   .modern-product-grid__card.is-revealing .modern-product-grid__card-reveal {
     opacity: 1;
     visibility: visible;
-    clip-path: ellipse(75% 55% at 50% 50%);
   }
 }
 
@@ -208,15 +223,12 @@
     transform: none;
   }
 
-  /* Simplify border to plain rectangle on mobile */
-  .modern-product-grid__card::before {
-    clip-path: polygon(evenodd,
-      0% 0%, 100% 0%, 100% 100%, 0% 100%,
-      1px 1px, 1px calc(100% - 1px), calc(100% - 1px) calc(100% - 1px), calc(100% - 1px) 1px
-    );
+  /* Simplify border to rounded rectangle on mobile (no notch) */
+  .modern-product-grid__card-border-path {
+    d: path("M 8,0 L 92,0 Q 100,0 100,8 L 100,92 Q 100,100 92,100 L 8,100 Q 0,100 0,92 L 0,8 Q 0,0 8,0 Z");
   }
 
-  /* Title below the card, full width on mobile */
+  /* Title below the image, full width on mobile */
   .modern-product-grid__card-info {
     position: relative;
     width: 100%;
@@ -244,7 +256,7 @@
    -------------------------------------------------------------------------- */
 
 @media (prefers-reduced-motion: reduce) {
-  .modern-product-grid__card::before {
+  .modern-product-grid__card-border-path {
     transition: none;
   }
 

@@ -15,11 +15,11 @@ Implementation plan: `.claude/features/modern-product-grid/OUTPUT-implementation
 Status: Not started
 
 ### Core behavior
-- [ ] Section appears in theme customizer under "Add section"
-- [ ] Collection picker setting works — selecting a collection populates the grid
-- [ ] Grid displays up to 8 products from the selected collection
+- [y] Section appears in theme customizer under "Add section"
+- [y] Collection picker setting works — selecting a collection populates the grid
+- [y] Grid displays up to 8 products from the selected collection
 - [ ] Product images render correctly (no stretching, no cropping issues)
-- [ ] Product titles display below each card
+- [y] Product titles display below each card
 - [ ] Clicking a card navigates to the correct product page
 - [ ] Cards with 2+ images show the secondary image reveal on hover
 - [ ] Cards with only 1 image show accent border on hover but no image reveal
